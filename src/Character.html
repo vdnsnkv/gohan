@@ -1,0 +1,57 @@
+<li>
+  <div>
+    Напад.: {character.attackRolls}K
+    <button on:click="increaseAttackRolls()">+</button
+    ><button on:click="decreaseAttackRolls()">-</button>
+    +{character.attackBonus}
+    <button on:click="increaseAttackBonus()">+</button
+    ><button on:click="decreaseAttackBonus()">-</button>
+    <button on:click="getAttackSum()">Attack!</button>
+  </div>
+  <div>
+    Результат: {character.attackSum ? character.attackSum : '-'}
+  </div>
+</li>
+
+<script>
+  export default {
+    oncreate() {
+      console.log(this.options);
+    },
+    methods: {
+      increaseAttackRolls() {
+        const { character } = this.get();
+        character.attackRolls = character.attackRolls ? character.attackRolls + 1 : 1;
+        this.set({ character });
+        if (character.type === "player") this.root.savePlayers();
+      },
+      decreaseAttackRolls() {
+        const { character } = this.get();
+        character.attackRolls = character.attackRolls ? character.attackRolls - 1 : 0;
+        this.set({ character });
+        if (character.type === "player") this.root.savePlayers();
+      },
+      increaseAttackBonus() {
+        const { character } = this.get();
+        character.attackBonus = character.attackBonus ? character.attackBonus + 1 : 1;
+        this.set({ character });
+        if (character.type === "player") this.root.savePlayers();
+      },
+      decreaseAttackBonus() {
+        const { character } = this.get();
+        character.attackBonus = character.attackBonus ? character.attackBonus - 1 : 0;
+        this.set({ character });
+        if (character.type === "player") this.root.savePlayers();
+      },
+      getAttackSum() {
+        const { character } = this.get();
+        character.attackSum = this.root.getAttackSum(character.attackRolls, character.attackBonus);
+        this.set({ character });
+      }
+    }
+    // events: {
+    // 	enter: keyEvent(ENTER_KEY),
+    // 	escape: keyEvent(ESCAPE_KEY)
+    // }
+  };
+</script>

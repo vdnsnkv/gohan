@@ -1,0 +1,95 @@
+<h1>Гоханский калькулятор атаки</h1>
+
+<section>
+  {#if characters.length > 0 || players.length > 0}
+  <ul>
+    <h3>Игроки</h3>
+    {#each players as player, index}
+      <Character character={player} index={index}/>
+    {/each}
+    <br />
+    <h3>Другие персонажи</h3>
+    {#each characters as character, index}
+      <Character character={character} index={index}/>
+    {/each}
+  </ul>
+  <br />
+  <button on:click="addPlayer()">+Добавить игрока</button>
+  <button on:click="addCharacter()">+Добавить</button>
+  <button on:click="calcAttackOrder()">Посчитать очередность</button>
+  {:else}
+  <button on:click="addPlayer()">+Добавить игрока</button>
+  <button on:click="addCharacter()">+Добавить</button>
+  <button on:click="calcAttackOrder()">Посчитать очередность</button>
+  {/if}
+</section>
+
+<script>
+  import Character from './Character.html';
+
+  export default {
+    oncreate() {
+      console.log(this.options);
+      let players = localStorage.getItem("players");
+      if (players === null) {
+        players = [];
+      } else {
+        players = JSON.parse(players);
+      }
+      this.set({ players });
+    },
+    methods: {
+      savePlayers() {
+        const { players } = this.get();
+        localStorage.setItem("players", JSON.stringify(players));
+      },
+      rollDice() {
+        let result = Math.floor(Math.random() * 6.0) + 1.0;
+        console.log(result);
+        return result;
+      },
+      getAttackSum(attackRolls, attackBonus) {
+        let attackSum = attackBonus;
+        for (var i = 0; i < attackRolls; i++) {
+          attackSum += this.rollDice();
+        }
+        return attackSum;
+      },
+      addCharacter() {
+        const { defaultRolls, defaultBonus, characters } = this.get();
+        characters.push({
+          attackRolls: defaultRolls,
+          attackBonus: defaultBonus,
+          attackSum: null,
+          type: 'npc'
+        });
+        this.set({ characters });
+      },
+      addPlayer() {
+        const { defaultRolls, defaultBonus, players } = this.get();
+        players.push({
+          attackRolls: defaultRolls,
+          attackBonus: defaultBonus,
+          attackSum: null,
+          type: 'player'
+        });
+        this.set({ players });
+        this.savePlayers();
+      },
+      calcAttackOrder() {
+        const { characters } = this.get();
+        for (var i = 0; i < characters.length; i++) {
+          characters[i].attackOrder = this.rollDice();
+        }
+        this.set({ characters });
+      }
+    },
+    components: {
+      Character,
+    }
+    // events: {
+    // 	enter: keyEvent(ENTER_KEY),
+    // 	escape: keyEvent(ESCAPE_KEY)
+    // }
+  };
+</script>
