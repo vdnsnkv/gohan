@@ -1,27 +1,29 @@
 <h1>Гоханский калькулятор атаки</h1>
 
 <section>
-  {#if characters.length > 0 || players.length > 0}
-  <ul>
+  {#if players.length > 0}
     <h3>Игроки</h3>
+    <div class="character-group">
     {#each players as player, index}
       <Character character={player} index={index}/>
     {/each}
-    <br />
-    <h3>Другие персонажи</h3>
-    {#each characters as character, index}
-      <Character character={character} index={index}/>
-    {/each}
-  </ul>
-  <br />
-  <button on:click="addPlayer()">+Добавить игрока</button>
-  <button on:click="addCharacter()">+Добавить</button>
-  <button on:click="calcAttackOrder()">Посчитать очередность</button>
-  {:else}
-  <button on:click="addPlayer()">+Добавить игрока</button>
-  <button on:click="addCharacter()">+Добавить</button>
-  <button on:click="calcAttackOrder()">Посчитать очередность</button>
+    </div>
   {/if}
+</section>
+<section>
+  {#if characters.length > 0}
+  <h3>Другие персонажи</h3>
+  <div class="character-group">
+  {#each characters as character, index}
+    <Character character={character} index={index}/>
+  {/each}
+  </div>
+  {/if}
+</section>
+<section>
+  <button on:click="addPlayer()">+Добавить игрока</button>
+  <button on:click="addCharacter()">+Добавить</button>
+  <button on:click="calcAttackOrder()">Посчитать очередность</button>
 </section>
 
 <script>
@@ -50,10 +52,13 @@
       },
       getAttackSum(attackRolls, attackBonus) {
         let attackSum = attackBonus;
+        let isCriticalStrike = true;
         for (var i = 0; i < attackRolls; i++) {
-          attackSum += this.rollDice();
+          let rollResult = this.rollDice();
+          attackSum += rollResult;
+          if (rollResult !== 6) isCriticalStrike = false;
         }
-        return attackSum;
+        return { attackSum, isCriticalStrike };
       },
       addCharacter() {
         const { defaultRolls, defaultBonus, characters } = this.get();

@@ -1,17 +1,20 @@
-<li>
-  <div>
+<div class="character">
+  <div class="attribute">
     Напад.: {character.attackRolls}K
     <button on:click="increaseAttackRolls()">+</button
     ><button on:click="decreaseAttackRolls()">-</button>
     +{character.attackBonus}
     <button on:click="increaseAttackBonus()">+</button
     ><button on:click="decreaseAttackBonus()">-</button>
+  </div>
+  <div class="attribute">
+    Результат: {character.attackSum ? character.attackSum : '-'} {character.isCriticalStrike ? '!' :
+    ''}
+  </div>
+  <div class="attribute">
     <button on:click="getAttackSum()">Attack!</button>
   </div>
-  <div>
-    Результат: {character.attackSum ? character.attackSum : '-'}
-  </div>
-</li>
+</div>
 
 <script>
   export default {
@@ -45,7 +48,12 @@
       },
       getAttackSum() {
         const { character } = this.get();
-        character.attackSum = this.root.getAttackSum(character.attackRolls, character.attackBonus);
+        const { attackSum, isCriticalStrike } = this.root.getAttackSum(
+          character.attackRolls,
+          character.attackBonus
+        );
+        character.attackSum = attackSum;
+        character.isCriticalStrike = isCriticalStrike;
         this.set({ character });
       }
     }
